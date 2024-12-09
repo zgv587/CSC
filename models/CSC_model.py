@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
-from config import *
 from torch.nn import Embedding, LayerNorm
 from transformers import BertModel, BertTokenizer
+
+from config import *
 
 from .transformers_layer import TransformerDecoder, TransformerDecoderLayer
 
@@ -18,6 +19,27 @@ class CSCModel(nn.Module):
 
     def forward(self, input_ids, attention_mask=None, labels=None):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)[0]
+
+
+class CombineBertModel(nn.Module):
+    def __init__(
+        self,
+        encoder_model,
+        decoder_model,
+    ):
+        super(CombineBertModel, self).__init__()
+        self.encoder = encoder_model
+        self.decoder = decoder_model
+        self.linear = nn.Linear(
+            decoder_model.config.hidden_size, encoder_model.config.vocab_size
+        )
+
+    def forward(self, src, src_mask):
+        x = self.encoder(src, attention_mask=src_mask).last_hidden_state
+        x = self.decoder(x)
+        x = self.linear(x)
+
+        return x
 
 
 class Seq2SeqModel(nn.Module):
