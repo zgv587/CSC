@@ -14,16 +14,15 @@ class DecoderBaseModel(nn.Module):
         self.config = EasyDict(
             {
                 "input_size": input_size,  # input_size
-                "hidden_size": hidden_size,
-                "is_transformer": False,
+                "hidden_size": hidden_size if hidden_size else input_size,
             }
         )
 
 
 class DecoderBaseRNN(DecoderBaseModel):
-    def __init__(self, rnn, input_size, hidden_size, num_layers, bidirectional=False):
+    def __init__(self, model, input_size, hidden_size, num_layers, bidirectional=False):
         super(DecoderBaseRNN, self).__init__(input_size, hidden_size)
-        self.model = rnn(
+        self.model = model(
             input_size=input_size,
             hidden_size=hidden_size,
             num_layers=num_layers,
@@ -55,7 +54,6 @@ class DecoderTransformer(DecoderBaseModel):
 
         self.config["num_encoder_layers"] = num_encoder_layers
         self.config["num_decoder_layers"] = num_decoder_layers
-        self.config["is_transformer"] = True
 
     def forward(self, src):
         output = self.model(src, src)

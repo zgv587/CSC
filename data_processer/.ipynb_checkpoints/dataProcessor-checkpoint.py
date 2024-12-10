@@ -71,6 +71,7 @@ class CSCDataset(Dataset):
         print(
             f"共{self.lines_num}句，共{self.words_num}字，最长的句子有{self.max_length}字"
         )
+        self.max_length = 512
 
     def data_processor(self):
         if isinstance(self.path, list):
