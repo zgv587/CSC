@@ -1,2 +1,2 @@
-from dataProcessor import CSCDataset
-from preprocessing import *
+from .dataProcessor import CSCDataset, split_torch_dataset
+from .preprocessing import *
