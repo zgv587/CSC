@@ -29,16 +29,16 @@ class Trainer:
         train=True,
     ):
         mode = "train" if train else "dev"
-        self.model.train() if train else self.model.eval()
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(device)
 
         for epoch in range(epochs):
+            self.model.train() if train else self.model.eval()
             total_loss = 0
 
             progress_bar = tqdm(
                 enumerate(dataloader),
-                desc=f"Epoch:{epoch+1}/{epochs}",
+                desc=f"{mode} Epoch:{epoch+1}/{epochs}",
                 total=len(dataloader),
             )
             for i, batch in progress_bar:
@@ -60,6 +60,8 @@ class Trainer:
                     loss.backward()
                     self.optimizer.step()
                 else:
+                    t = torch.argmax(outputs, dim=-1)
+                    nt = t * attention_mask
                     for i in range(len(t)):
                         char_level, sent_level = cal_err(
                             input_ids[i],
@@ -100,7 +102,7 @@ class Trainer:
 
         if mode == "dev":
             print(
-                total_loss / len(test_dataloader),
+                total_loss / len(dataloader),
                 self.test_char_level,
                 self.test_sent_level,
             )
