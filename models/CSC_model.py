@@ -33,3 +33,6 @@ class CombineBertModel(nn.Module):
 
     def save(self, store_path):
         torch.save(self, store_path)
+
+    def save_state(self, store_path):
+        torch.save(self.state_dict(), store_path)
