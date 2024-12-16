@@ -78,7 +78,9 @@ class Trainer:
                             for key, v in sent_level.items()
                         }
 
-                progress_bar.set_postfix({"loss": "{:.3f}".format(loss.item())})
+                progress_bar.set_postfix({"batches loss": "{:.3f}".format(loss.item())})
+                if i == len(progress_bar) - 1:
+                    progress_bar.set_postfix({"avg loss": "{:.3f}".format(total_loss / len(dataloader))})
 
             if (epoch + 1) % printepoch == 0:
                 with torch.no_grad():
@@ -94,7 +96,7 @@ class Trainer:
                         print(self.tokenizer.decode(l, skip_special_tokens=True))
                         print(cal_err(r, v, l, limit_length))
 
-            print(f"Epoch {epoch+1} Loss: {total_loss / len(dataloader)}")
+            # print(f"Epoch {epoch+1} Loss: {total_loss / len(dataloader)}")
 
             # dev
             if test_dataloader:

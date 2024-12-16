@@ -4,6 +4,7 @@ from torch.nn import Embedding, LayerNorm
 from transformers import BertModel, BertTokenizer
 
 from config import *
+from utils import beam_search_generate
 
 
 class CombineBertModel(nn.Module):
@@ -27,3 +28,8 @@ class CombineBertModel(nn.Module):
         x = self.linear(x)
 
         return x
+
+    generate_with_beam = beam_search_generate
+
+    def save(self, store_path):
+        torch.save(self, store_path)
