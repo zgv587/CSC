@@ -5,4 +5,4 @@
 - [ ] 混淆集
 - [ ] 实现pipeline, detect model + sort + correct model
 
-效果差，还再不断完善
+效果差，还在不断完善
