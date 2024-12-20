@@ -6,49 +6,18 @@ from config import *
 from torch.utils.data import Dataset, random_split
 from transformers import BertTokenizer
 
-"""
-class CSCDataset(Dataset):
-    def __init__(
-            self,
-            path: Union[str, List[str]],  # path 数据集路径
-            tokenizer: object,  # tokenizer 分词器，text2id
-    ):
-        # assert len(data) == len(label)
-        self.path = path
-        self.tokenizer = tokenizer
-
-        self.data_processor()
-
-    def data_processor(self):
-        \"""
-        DataPreprocessing, generate data and labels for CSC dataset. And convert text to tensors.
-        :return: None
-        \"""
-        data_preprocessor = DataPreprocessor(
-            path=self.path,
-            tokenizer=self.tokenizer
-        )
-
-        self.data = data_preprocessor.data.values()
-        self.length = len(self.data)
-
-    def __getitem__(self, index):
-        return torch.tensor(self.data[index])
-
-    def __len__(self):
-        return self.length
-"""
-
 
 class CSCDataset(Dataset):
     def __init__(
         self,
         path: Union[str, List[str]],  # path 数据集路径
         tokenizer: object,  # tokenizer 分词器，text2id
+        converter: object = None,
     ):
         # assert len(data) == len(label)
         self.path = path
         self.tokenizer = tokenizer
+        self.converter = converter
 
         self.raw_sentences = []
         self.corr_sentences = []
@@ -74,6 +43,7 @@ class CSCDataset(Dataset):
         self.max_length = 512
 
     def data_processor(self):
+        # SIGHAN dataset 将 原句 和 正确句 是分开的
         if isinstance(self.path, list):
             self.handle_sighan()
         elif isinstance(self.path, str):
@@ -87,6 +57,8 @@ class CSCDataset(Dataset):
                 self.lines_num += 1
                 self.words_num += len(line)
                 self.max_length = max(self.max_length, len(line))
+                if self.converter:
+                    line = self.converter.convert(line)
                 self.raw_sentences.append(line)
 
         with open(ypath, "r", encoding="utf-8") as f:
@@ -94,6 +66,8 @@ class CSCDataset(Dataset):
                 f, desc="preprocessing sighan dataset", total=self.lines_num
             ):
                 line = line.strip()
+                if self.converter:
+                    line = self.converter.convert(line)
                 self.corr_sentences.append(line)
 
     def __len__(self):
@@ -125,15 +99,10 @@ class CSCDataset(Dataset):
             truncation=True,
         ).flatten()
 
-        # input_ids = encoding["input_ids"]
-        # attention_mask = encoding["attention_mask"]
-
-        # labels = self.tokenizer.encode(corr_sentence)
-
         return {
-            'input_ids': input_ids,
-            'attention_mask': attention_mask,
-            'labels': labels
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "labels": labels,
         }
 
 

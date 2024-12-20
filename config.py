@@ -1,5 +1,8 @@
 # 配置文件
 
+# confusion set
+confusion_set_path = "./data/confusion.txt"
+
 # SIGHAN数据
 SIGHAN_train_dir_corr = "./data/traditional/train15_correct.txt"
 SIGHAN_train_dir_err = "./data/traditional/train15_error.txt"
