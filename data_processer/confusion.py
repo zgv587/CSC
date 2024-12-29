@@ -10,9 +10,9 @@ def load_confusion(filepath, tokenizer=None, mode="utf-8"):
             if tokenizer:
                 convert = tokenizer.convert_tokens_to_ids
                 confusion_set[convert(char)].extend(
-                    convert(list(confusion_char))
+                    convert(list(confusion_char)+[char])
                 )
             else:
-                confusion_set[char].extend(list(confusion_char))
+                confusion_set[char].extend(list(confusion_char)+[char])
 
     return confusion_set
